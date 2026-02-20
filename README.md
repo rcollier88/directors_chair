@@ -38,8 +38,8 @@ Director's Chair works with any service that exposes an OpenAI-compatible API. I
 ### Install & Run
 
 ```bash
-git clone https://github.com/rcoll/directors-chair.git
-cd directors-chair
+git clone https://github.com/rcollier88/directors_chair.git
+cd directors_chair
 pnpm install
 pnpm dev
 ```

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "A storyboard creation tool with local AI integration",
   "main": "./out/main/index.js",
-  "homepage": "https://github.com/rcoll/directors-chair",
+  "homepage": "https://github.com/rcollier88/directors_chair",
   "author": "",
   "license": "MIT",
   "scripts": {
