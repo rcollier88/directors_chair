@@ -1,0 +1,186 @@
+PRD v2 — Windows Storyboard + Local AI Studio (Light)
+
+1. Overview
+
+A Windows desktop application for creating storyboards (scenes + notes + references) and generating/attaching media (images/video) by calling locally hosted AI endpoints. The product optimizes for a fast “idea → scene → generate → iterate → export” workflow, fully local-first.
+
+2. Problem Statement
+
+Independent creators want a single place to:
+
+Plan scenes visually and keep context (beats, camera notes, dialogue, references)
+
+Generate concept images / short clips without uploading data to third-party services
+
+Keep prompts, iterations, and outputs organized per scene for reuse and refinement
+
+Current solutions are either:
+
+Storyboarding tools with weak AI/local integration, or
+
+AI tools with poor organization/story structure
+
+3. Goals & Success Metrics
+
+Goals
+
+G1: Enable users to create a storyboard with scenes, notes, and assets quickly.
+
+G2: Make local model generation feel “native” (no manual file wrangling).
+
+G3: Keep all work local, organized, and easy to export/share.
+
+Success Metrics (directional, measurable)
+
+M1: Time to create a new project and add first 5 scenes decreases.
+
+M2: % of generations successfully completed on first try increases (endpoint reliability + UX).
+
+M3: Export completion rate (users can produce a shareable artifact).
+
+M4: User-reported satisfaction with workflow (in-app feedback).
+
+4. Target Users & Personas
+
+Indie Animator / Filmmaker: storyboards shots, needs quick visual ideation, exports boards for collaborators.
+
+Solo Content Creator: makes shorts/reels, wants consistent style and quick iterations.
+
+Writer/Director Type: heavy on scene notes, wants visuals to match beats and camera language.
+
+5. Core Use Cases / User Stories
+
+US-1: As a creator, I want to create a project and add scenes so I can structure a story.
+
+US-2: As a creator, I want each scene to hold text notes + reference images so context stays attached.
+
+US-3: As a creator, I want to generate an image from a local model for a scene so I can visualize it.
+
+US-4: As a creator, I want to iterate on prompts and keep a history so I can compare outputs.
+
+US-5: As a creator, I want to export the storyboard so I can share/review it outside the app.
+
+US-6: As a creator, I want to import existing images/video clips and attach them to scenes.
+
+6. Scope
+   In Scope (v1)
+
+Project creation/open/save (local)
+
+Scene board (grid/timeline of cards) with drag/drop ordering
+
+Scene editor (details panel): title, description, camera notes, dialogue/beat notes, tags
+
+Asset attachments per scene: images + video clips + reference links (local files)
+
+Local AI integration via configurable endpoints:
+
+Text generation (scene enhancements, shot list suggestions)
+
+Image generation (concept art / frames)
+
+(Optional if available) video generation endpoint support as “attach generated clip”
+
+Prompt templates + prompt history per scene
+
+Generation jobs UI: queue, progress, cancel, retry
+
+Export storyboard (at minimum PDF + image contact sheet + JSON project export)
+
+Out of Scope (v1)
+
+Full non-linear video editing (multi-track timeline, audio mixing)
+
+Cloud sync / accounts / collaboration
+
+Hosting models inside the app (app assumes models run as local services)
+
+Marketplace/community prompt sharing (could be future)
+
+7. High-Level Functional Requirements
+
+Project Management
+
+Create/Open/Save/Save As projects
+
+Autosave + recover last session after crash
+
+Project contains scenes, metadata, and references to local assets (with an option to “bundle/copy assets” into project folder)
+
+Storyboard & Scene Management
+
+Add/delete/duplicate scenes
+
+Reorder scenes via drag & drop
+
+Scene fields: title, description, shot/camera notes, dialogue/voiceover notes, tags, status (Draft/Approved)
+
+Asset Handling
+
+Attach local images/video to scenes (drag/drop + file picker)
+
+Generate and store thumbnails for quick browsing
+
+Allow “Reveal in Explorer” for any asset
+
+Basic preview (image viewer; video player)
+
+Local Model Integrations
+
+“Model Manager” settings screen:
+
+Add endpoint (name, base URL, type: text/image/video, route mapping, optional auth header)
+
+Test connection / health check
+
+Default model per task (text vs image vs video)
+
+“Generate” action from a scene:
+
+Choose task (image/text/video)
+
+Use prompt template + scene fields to compose prompt
+
+Save prompt + parameters + output as a “Generation Run” tied to the scene
+
+Failure handling: show error, allow retry, allow switching endpoint
+
+Export
+
+Export PDF storyboard (scene cards + thumbnails + notes)
+
+Export image sheet/contact sheet
+
+Export machine-readable JSON (for pipelines / other tools)
+
+8. Dependencies & Constraints
+
+OS: Windows 10/11
+
+Local endpoints: User-provided local servers (e.g., LM Studio/OpenAI-compatible server, ComfyUI, custom REST for DeepSeek/others)
+
+GPU/Compute variability: Must handle slow machines gracefully (queue + cancel + progress)
+
+File system constraints: Long paths, missing/moved files, external drives
+
+Security/Privacy constraint: Local-first; no external calls unless user explicitly configures an endpoint
+
+9. Risks & Open Questions
+
+Risks
+
+R1: Endpoint diversity (different APIs) can balloon complexity → mitigate with a small set of supported “adapters” (OpenAI-compatible, ComfyUI, Custom REST).
+
+R2: Asset bloat (many generations) → mitigate with cache controls + per-project storage settings.
+
+R3: Poor UX during long generations → mitigate with job queue, progress, cancel, and background operation.
+
+Open Questions
+
+OQ-1: Do you want the project to bundle assets (copy into project folder) by default, or reference files in-place?
+
+OQ-2: Which endpoint standards should be “first-class” in v1: OpenAI-compatible, ComfyUI, or custom REST?
+
+OQ-3: What are the must-have export formats beyond PDF/JSON (e.g., Final Draft, FCPXML, Premiere markers)?
+
+OQ-4: Is “video generation” required in v1 or can it be a v1.1 feature behind a capability check?
