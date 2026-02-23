@@ -5,11 +5,23 @@ import { MainContent } from './components/layout/MainContent'
 import { WelcomeScreen } from './components/layout/WelcomeScreen'
 
 function App(): JSX.Element {
-  const { project, loadRecentProjects } = useProjectStore()
+  const { project, loadRecentProjects, saveProject } = useProjectStore()
 
   useEffect(() => {
     loadRecentProjects()
   }, [loadRecentProjects])
+
+  // Global keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent): void => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault()
+        saveProject()
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [saveProject])
 
   if (!project) {
     return <WelcomeScreen />
