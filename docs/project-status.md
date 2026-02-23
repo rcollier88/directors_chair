@@ -1,7 +1,7 @@
 # Project Status
 
 ## Last Updated
-2026-02-23 — Phase 2 Storyboard Core complete
+2026-02-23 — Phase 3 Asset Management complete
 
 ## Completed
 - [x] Phase 1: Foundation
@@ -19,16 +19,20 @@
   - Sidebar view switching and scene count
   - Ctrl+S keyboard shortcut for save
 
-## In Progress
-- [ ] Phase 3: Asset Management
+- [x] Phase 3: Asset Management
   - File import via drag-drop + file picker
-  - Asset bundling (copy files into project folder)
-  - Thumbnail generation for grid view
-  - Image preview viewer
-  - "Reveal in Explorer" for any asset
+  - Asset bundling (copy files into project assets folder)
+  - Thumbnail generation via Electron nativeImage
+  - Image preview viewer (click-to-expand in scene editor)
+  - Scene card thumbnails (first image asset)
+  - "Reveal in Explorer" and delete actions on assets
+  - Custom `dc-asset://` protocol for serving local files in dev mode
+  - `webUtils.getPathForFile()` for drag-and-drop with contextIsolation
+
+## In Progress
+- [ ] Phase 4: AI Integration
 
 ## Up Next
-- [ ] Phase 4: AI Integration
 - [ ] Phase 5: Audio Timeline
 - [ ] Phase 6: Export
 - [ ] Phase 7: Polish & Reliability
@@ -39,6 +43,8 @@
 ## Known Issues
 - `ELECTRON_RUN_AS_NODE=1` is set by VSCode/Claude Code environment — handled by `scripts/dev.js`
 - Must use `node-linker=hoisted` in `.npmrc` for pnpm + Electron compatibility
+- `File.path` is unavailable in Electron v33 with `contextIsolation: true` — use `webUtils.getPathForFile()` via preload
+- Dev mode renderer loads from `http://localhost` which blocks `file://` URLs — use `dc-asset://` custom protocol
 
 ## Quick Reference
 - How to run: `pnpm dev`

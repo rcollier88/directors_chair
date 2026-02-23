@@ -6,6 +6,13 @@ export const IPC_CHANNELS = {
   PROJECT_SAVE_AS: 'project:save-as',
   PROJECT_GET_RECENT: 'project:get-recent',
 
+  // Asset operations
+  ASSET_IMPORT: 'asset:import',
+  ASSET_DELETE: 'asset:delete',
+  ASSET_REVEAL: 'asset:reveal',
+  ASSET_GET_PATH: 'asset:get-path',
+  ASSET_PICK_FILES: 'asset:pick-files',
+
   // Dialog helpers
   DIALOG_OPEN_DIRECTORY: 'dialog:open-directory',
   DIALOG_OPEN_FILE: 'dialog:open-file',

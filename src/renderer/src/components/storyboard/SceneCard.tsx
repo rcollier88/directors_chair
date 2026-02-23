@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { useProjectStore } from '../../stores/project-store'
@@ -8,8 +9,10 @@ interface SceneCardProps {
 }
 
 export function SceneCard({ scene }: SceneCardProps): JSX.Element {
-  const { selectedSceneId, selectScene, deleteScene, duplicateScene } = useProjectStore()
+  const { selectedSceneId, projectPath, selectScene, deleteScene, duplicateScene } =
+    useProjectStore()
   const isSelected = selectedSceneId === scene.id
+  const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null)
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: scene.id
@@ -20,6 +23,26 @@ export function SceneCard({ scene }: SceneCardProps): JSX.Element {
     transition,
     opacity: isDragging ? 0.5 : 1
   }
+
+  // Load thumbnail for the first image asset
+  const firstImage = scene.assets.find((a) => a.type === 'image')
+  useEffect(() => {
+    if (!firstImage || !projectPath) {
+      setThumbnailUrl(null)
+      return
+    }
+    const load = async (): Promise<void> => {
+      try {
+        const path = firstImage.thumbnailPath
+          ? await window.api.getAssetPath(projectPath, 'thumbnail', scene.id, firstImage.thumbnailPath)
+          : await window.api.getAssetPath(projectPath, 'asset', scene.id, firstImage.filename)
+        setThumbnailUrl('dc-asset:///' + path.replace(/\\/g, '/'))
+      } catch {
+        setThumbnailUrl(null)
+      }
+    }
+    load()
+  }, [firstImage?.id, firstImage?.thumbnailPath, scene.id, projectPath])
 
   const handleClick = (e: React.MouseEvent): void => {
     e.stopPropagation()
@@ -48,9 +71,13 @@ export function SceneCard({ scene }: SceneCardProps): JSX.Element {
       }`}
     >
       {/* Thumbnail area */}
-      <div className="flex h-28 items-center justify-center rounded-t-md bg-gray-750 bg-gray-700/50">
-        {scene.assets.length > 0 ? (
-          <span className="text-xs text-gray-400">{scene.assets.length} asset(s)</span>
+      <div className="flex h-28 items-center justify-center overflow-hidden rounded-t-md bg-gray-700/50">
+        {thumbnailUrl ? (
+          <img
+            src={thumbnailUrl}
+            alt={scene.title}
+            className="h-full w-full object-cover"
+          />
         ) : (
           <span className="text-2xl text-gray-600">{scene.order + 1}</span>
         )}
@@ -72,8 +99,10 @@ export function SceneCard({ scene }: SceneCardProps): JSX.Element {
           >
             {scene.status}
           </span>
-          {scene.tags.length > 0 && (
-            <span className="text-[10px] text-gray-500">{scene.tags.length} tag(s)</span>
+          {scene.assets.length > 0 && (
+            <span className="text-[10px] text-gray-500">
+              {scene.assets.length} asset{scene.assets.length !== 1 ? 's' : ''}
+            </span>
           )}
         </div>
       </div>

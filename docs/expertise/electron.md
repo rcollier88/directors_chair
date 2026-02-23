@@ -25,11 +25,17 @@ Electron main process handling window management, IPC, file system operations, a
 ## Gotchas
 - **CRITICAL:** `ELECTRON_RUN_AS_NODE=1` is set by VSCode/Claude Code. This makes Electron run as plain Node.js. Our `scripts/dev.js` wrapper deletes this before launching. Always use `pnpm dev`, never call `electron-vite` directly from this terminal.
 - **CRITICAL:** pnpm must use `node-linker=hoisted` (in `.npmrc`) for Electron compatibility. Without this, `require('electron')` resolves to the npm package path string instead of Electron's built-in module.
+- **CRITICAL:** `File.path` is NOT available in Electron v33 with `contextIsolation: true`. Use `webUtils.getPathForFile(file)` from preload instead. Exposed as `window.api.getPathForFile(file)`.
+- **CRITICAL:** In dev mode, the renderer loads from `http://localhost:5173`, which blocks `file://` URLs due to browser origin security. Use the custom `dc-asset://` protocol registered in `src/main/index.ts` to serve local files. Format: `dc-asset:///C:/path/to/file.png`.
 - `BrowserWindow.getFocusedWindow()` can return null — always check
 - File paths on Windows use backslashes but the app should handle both
 - `app.isPackaged` returns false in dev, true in production builds
 
 ## Recent Changes
+- 2026-02-23: Added `dc-asset://` custom protocol for local file serving
+- 2026-02-23: Added asset IPC handlers (import, delete, reveal, get-path, pick-files)
+- 2026-02-23: Added asset-manager service (import with copy, thumbnail generation, delete)
+- 2026-02-23: Added `webUtils.getPathForFile()` to preload API for drag-and-drop
 - 2026-02-20: Created main process with window creation, IPC registration
 - 2026-02-20: Created project IPC handlers (create, open, save, save-as, recent)
 - 2026-02-20: Created project-manager service for file system operations

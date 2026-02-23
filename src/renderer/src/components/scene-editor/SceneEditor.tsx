@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useProjectStore } from '../../stores/project-store'
+import { AssetGallery } from './AssetGallery'
 import type { Scene } from '../../../../shared/types'
 
 interface SceneEditorProps {
@@ -9,7 +10,7 @@ interface SceneEditorProps {
 export function SceneEditor({ scene }: SceneEditorProps): JSX.Element {
   const { updateScene, deleteScene, duplicateScene, selectScene } = useProjectStore()
 
-  // Local state for text fields (debounced save)
+  // Local state for text fields
   const [title, setTitle] = useState(scene.title)
   const [description, setDescription] = useState(scene.description)
   const [cameraNote, setCameraNote] = useState(scene.cameraNote)
@@ -25,7 +26,6 @@ export function SceneEditor({ scene }: SceneEditorProps): JSX.Element {
     setTagInput('')
   }, [scene.id])
 
-  // Debounced save on blur
   const handleBlur = (field: string, value: string): void => {
     updateScene(scene.id, { [field]: value })
   }
@@ -48,16 +48,8 @@ export function SceneEditor({ scene }: SceneEditorProps): JSX.Element {
     updateScene(scene.id, { tags: scene.tags.filter((t) => t !== tag) })
   }
 
-  const handleDelete = (): void => {
-    deleteScene(scene.id)
-  }
-
-  const handleDuplicate = (): void => {
-    duplicateScene(scene.id)
-  }
-
   return (
-    <div className="flex h-full flex-col overflow-hidden bg-gray-850 bg-gray-800/50">
+    <div className="flex h-full flex-col overflow-hidden bg-gray-800/50">
       {/* Header */}
       <div className="flex items-center justify-between border-b border-gray-700 px-4 py-2">
         <span className="text-xs font-medium text-gray-400">Scene #{scene.order + 1}</span>
@@ -175,18 +167,21 @@ export function SceneEditor({ scene }: SceneEditorProps): JSX.Element {
             </button>
           </div>
         </div>
+
+        {/* Assets */}
+        <AssetGallery scene={scene} />
       </div>
 
       {/* Bottom actions */}
       <div className="flex gap-2 border-t border-gray-700 p-3">
         <button
-          onClick={handleDuplicate}
+          onClick={() => duplicateScene(scene.id)}
           className="flex-1 rounded bg-gray-700 py-1.5 text-xs text-gray-300 hover:bg-gray-600"
         >
           Duplicate
         </button>
         <button
-          onClick={handleDelete}
+          onClick={() => deleteScene(scene.id)}
           className="flex-1 rounded bg-red-900/30 py-1.5 text-xs text-red-400 hover:bg-red-900/50"
         >
           Delete

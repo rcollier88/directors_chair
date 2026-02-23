@@ -1,6 +1,6 @@
-import { contextBridge, ipcRenderer } from 'electron'
+import { contextBridge, ipcRenderer, webUtils } from 'electron'
 import { IPC_CHANNELS } from '../shared/constants'
-import type { ProjectFile } from '../shared/types'
+import type { ProjectFile, Asset } from '../shared/types'
 
 const api = {
   // Project operations
@@ -18,6 +18,31 @@ const api = {
 
   getRecentProjects: (): Promise<Array<{ name: string; path: string; modifiedAt: string }>> =>
     ipcRenderer.invoke(IPC_CHANNELS.PROJECT_GET_RECENT),
+
+  // Asset operations
+  importAssets: (projectDir: string, sceneId: string, filePaths: string[]): Promise<Asset[]> =>
+    ipcRenderer.invoke(IPC_CHANNELS.ASSET_IMPORT, projectDir, sceneId, filePaths),
+
+  deleteAsset: (projectDir: string, sceneId: string, asset: Asset): Promise<void> =>
+    ipcRenderer.invoke(IPC_CHANNELS.ASSET_DELETE, projectDir, sceneId, asset),
+
+  revealAsset: (projectDir: string, sceneId: string, filename: string): Promise<void> =>
+    ipcRenderer.invoke(IPC_CHANNELS.ASSET_REVEAL, projectDir, sceneId, filename),
+
+  getAssetPath: (
+    projectDir: string,
+    type: 'asset' | 'thumbnail',
+    sceneId: string,
+    filenameOrRelPath: string
+  ): Promise<string> =>
+    ipcRenderer.invoke(IPC_CHANNELS.ASSET_GET_PATH, projectDir, type, sceneId, filenameOrRelPath),
+
+  pickFiles: (): Promise<string[]> =>
+    ipcRenderer.invoke(IPC_CHANNELS.ASSET_PICK_FILES),
+
+  // Get native file path from a dropped File object (works with contextIsolation)
+  getPathForFile: (file: File): string =>
+    webUtils.getPathForFile(file),
 
   // Dialog helpers
   openDirectoryDialog: (): Promise<string | null> =>
